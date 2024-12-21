@@ -2,13 +2,15 @@
   "name": "api-pets",
   "version": "1.0.0",
   "description": "Api que gerência petshops e seus pets",
-  "main": "src/index.js",
+  "main": "src/dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "npx tsc"
   },
   "author": "José Henrique",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },

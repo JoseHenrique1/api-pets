@@ -6,12 +6,14 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false,
+		"ignoreUnknown": true,
+		"include": ["src/**/*.ts"],
 		"ignore": []
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 120
 	},
 	"organizeImports": {
 		"enabled": false
@@ -20,11 +22,13 @@
 		"enabled": true,
 		"rules": {
 			"recommended": false
+			
 		}
 	},
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
+
 		}
 	}
 }

@@ -55,11 +55,10 @@ export const putPet: RequestHandler<petParamsId, {}, petBodyPut> = (req, res) =>
 		pet.description = description;
 		pet.deadline_vaccination = deadline_vaccination;
 	}
-  res.status(200).json({
-    success: "Alteração feita com sucesso"
-  })
+	res.status(200).json({
+		success: "Alteração feita com sucesso",
+	});
 };
-
 
 export const patchPetVaccinated: RequestHandler<petParamsId> = (req, res) => {
 	const { id } = req.params;
@@ -73,14 +72,13 @@ export const patchPetVaccinated: RequestHandler<petParamsId> = (req, res) => {
 			error: "Pet não encontrado",
 		});
 	} else {
-		pet.vaccinated = true
+		pet.vaccinated = true;
 	}
 
-  res.status(200).json({
-    success: "Alteração feita com sucesso"
-  })
+	res.status(200).json({
+		success: "Alteração feita com sucesso",
+	});
 };
-
 
 export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 	const { id } = req.params;
@@ -94,11 +92,11 @@ export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 			error: "Pet não encontrado",
 		});
 	} else {
-    const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
-		petIndex && petshop?.pets.splice(petIndex,1);
+		const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
+		petIndex && petshop?.pets.splice(petIndex, 1);
 	}
 
-  res.status(200).json({
-    success: "Remoção feita com sucesso"
-  })
+	res.status(200).json({
+		success: "Remoção feita com sucesso",
+	});
 };

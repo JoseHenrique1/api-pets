@@ -10,5 +10,3 @@ router.post("/pets", postPet);
 router.put("/pets/:id", putPet);
 router.patch("/pets/:id/vaccinated", patchPetVaccinated);
 router.delete("/pets/:id", deletePet);
-
-

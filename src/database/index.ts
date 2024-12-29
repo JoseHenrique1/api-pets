@@ -1,6 +1,6 @@
-import { petshop } from "../types/petshop.types";
+import { petshopType } from "../types/petshop.types";
 
-export const petshops: petshop[] = [
+export const petshops: petshopType[] = [
 	{
 		id: "acde070d-8c4c-4f0d-9d8a-162843c10333",
 		name: "petshop Almarante",

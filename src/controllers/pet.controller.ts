@@ -90,8 +90,8 @@ export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 		res.status(404).json({
 			error: "Pet não encontrado",
 		});
+		return;
 	}
-
 	const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
 	if (petIndex !== undefined && petIndex !== -1) {
 		petshop?.pets.splice(petIndex, 1);

@@ -27,6 +27,7 @@ export const postPet: RequestHandler<{}, {}, petBodyPost> = (req, res) => {
 		res.status(404).json({
 			error: "Petshop não encontrado",
 		});
+		return;
 	}
 
 	petshopFound?.pets.push(pet);
@@ -70,6 +71,7 @@ export const patchPetVaccinated: RequestHandler<petParamsId> = (req, res) => {
 		res.status(404).json({
 			error: "Pet não encontrado",
 		});
+		return;
 	} else {
 		pet.vaccinated = true;
 	}
@@ -95,9 +97,13 @@ export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 	const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
 	if (petIndex !== undefined && petIndex !== -1) {
 		petshop?.pets.splice(petIndex, 1);
+		res.status(200).json({
+			success: "Remoção feita com sucesso",
+		});
+		return;
 	}
 
-	res.status(200).json({
-		success: "Remoção feita com sucesso",
+	res.status(400).json({
+		error: "Não foi possivel remover o pet",
 	});
 };

@@ -2,7 +2,6 @@ import { RequestHandler } from "express";
 import { petshops } from "../database";
 import { pet, petBodyPost, petBodyPut, petParamsId } from "../types/pet.types";
 import { v4 as uuid } from "uuid";
-import { json } from "stream/consumers";
 
 export const getPets: RequestHandler = (req, res) => {
 	const pets = req.petshop?.pets || [];
@@ -91,9 +90,11 @@ export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 		res.status(404).json({
 			error: "Pet não encontrado",
 		});
-	} else {
-		const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
-		petIndex && petshop?.pets.splice(petIndex, 1);
+	}
+
+	const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
+	if (petIndex !== undefined && petIndex !== -1) {
+		petshop?.pets.splice(petIndex, 1);
 	}
 
 	res.status(200).json({

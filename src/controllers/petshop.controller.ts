@@ -2,6 +2,7 @@ import { petshops } from "../database";
 import { Request, Response } from "express";
 import { createPetshop } from "../types/petshop.types";
 import { v4 as uuid } from "uuid";
+import { isValidCNPJ } from "../utils/isvalid-cnpj";
 
 export function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Response) {
 	const { name, cnpj } = req.body;
@@ -12,6 +13,13 @@ export function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Resp
 		cnpj,
 		pets: [],
 	};
+
+	if (!isValidCNPJ(cnpj)) {
+		res.status(400).json({
+			error: "CNPJ Inválido",
+		})
+		return;
+	}
 
 	const petshopExists = petshops.find((petshop) => petshop.cnpj === cnpj);
 	if (petshopExists) {

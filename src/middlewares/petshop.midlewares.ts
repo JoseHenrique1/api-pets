@@ -6,16 +6,18 @@ export function checkExistsUserAccount(req: Request<{},{},{},{},checkExistsUserA
 	const cnpj = req.headers.cnpj;	
 
 	if (Array.isArray(cnpj) || !cnpj) {
-		return res.status(400).json({
+		res.status(400).json({
 			error: "CNPJ Inválido",
 		});
+		return;
 	}
 	const petshop = petshops.find((petshopCurrent) => petshopCurrent.cnpj === cnpj);
 	
 	if (!petshop) {
-		return res.status(404).json({
+		res.status(404).json({
 			error: "Petshop não encontrado",
 		});
+		return ;
 	}
 
 	req.petshop = petshop;

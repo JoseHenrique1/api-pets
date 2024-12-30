@@ -16,6 +16,7 @@ export const postPet: RequestHandler<{}, {}, petBodyPost> = (req, res) => {
 		id: uuid(),
 		vaccinated: false,
 		...body,
+		deadline_vaccination: new Date(body.deadline_vaccination).toISOString(),
 		created_at: new Date().toISOString(),
 	};
 

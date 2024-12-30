@@ -18,6 +18,7 @@ export function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Resp
 		res.status(400).json({
 			error: "Petshop já existe!",
 		});
+		return;
 	}
 
 	petshops.push(petshop);

@@ -8,3 +8,7 @@ export interface petshopType {
 }
 
 export type createPetshop = Omit<petshopType, "id" | "pets">;
+
+export type checkExistsUserAccountHeaderType = {
+	cnpj: string;
+};

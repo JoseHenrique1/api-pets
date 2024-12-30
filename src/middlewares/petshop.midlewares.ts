@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from "express";
+import { petshops } from "../database";
 
 export function checkExistsUserAccount(req: Request, res: Response, next: NextFunction) {
-	console.log("middleware");
 	const cnpj = req.headers["cnpj"];
-	req.petshop = {
-		id: "acde070d-8c4c-4f0d-9d8a-162843c10333",
-		name: "petshop Almarante",
-		cnpj: "20.031.219/0002-46",
-		pets: [],
-	};
+	const petshop = petshops.find((petshopCurrent) => petshopCurrent.cnpj === cnpj);
+	
+	if (!petshop) {
+		return res.status(404).json({
+			error: "Petshop not found",
+		});
+	}
+
+	req.petshop = petshop;
+
 	next();
 }

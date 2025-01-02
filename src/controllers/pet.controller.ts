@@ -1,92 +1,98 @@
 import { RequestHandler } from "express";
-import { petshops } from "../database";
-import { pet, petBodyPost, petBodyPut, petParamsId } from "../types/pet.types";
-import { v4 as uuid } from "uuid";
+import { petBodyPost, petBodyPut, petParamsId } from "../types/pet.types";
 
-export const getPets: RequestHandler = (req, res) => {
-	const pets = req.petshop?.pets || [];
+import { prisma } from "../database/prisma";
+
+export const getPets: RequestHandler = async (req, res) => {
+	const pets = await prisma.pet.findMany({
+		where: {
+			ownerCnpj: req.petshop?.cnpj,
+		},
+	});
 	res.status(200).json({
 		pets,
 	});
 };
 
-export const postPet: RequestHandler<{}, {}, petBodyPost> = (req, res) => {
+export const postPet: RequestHandler<{}, {}, petBodyPost> = async (req, res) => {
 	const { petshop, body } = req;
-	const pet: pet = {
-		id: uuid(),
-		vaccinated: false,
-		...body,
-		deadline_vaccination: new Date(body.deadline_vaccination).toISOString(),
-		created_at: new Date().toISOString(),
-	};
-
 	const cnpj = petshop?.cnpj;
 
-	const petshopFound = petshops.find((petshop) => petshop.cnpj === cnpj);
+	const petshopFound = await prisma.petshop.findUnique({ where: { cnpj: cnpj } });
 
-	if (!petshopFound) {
+	if (!petshopFound || cnpj == undefined) {
 		res.status(404).json({
 			error: "Petshop não encontrado",
 		});
 		return;
 	}
 
-	petshopFound?.pets.push(pet);
+	const pet = {
+		vaccinated: false,
+		...body,
+		deadline_vaccination: new Date(body.deadline_vaccination).toISOString(),
+		ownerCnpj: cnpj,
+	};
+
+	const petCreated = await prisma.pet.create({ data: pet });
+
 	res.status(201).json({
-		pet,
+		petCreated,
 	});
 };
 
-export const putPet: RequestHandler<petParamsId, {}, petBodyPut> = (req, res) => {
+export const putPet: RequestHandler<petParamsId, {}, petBodyPut> = async (req, res) => {
 	const { id } = req.params;
-
-	const petshop = petshops.find((petShop) => petShop.cnpj == req.petshop?.cnpj);
-
-	const pet = petshop?.pets.find((petCurrent) => petCurrent.id == id);
+	const pet = await prisma.pet.findUnique({ where: { id } });
 
 	if (!pet) {
 		res.status(404).json({
 			error: "Pet não encontrado",
 		});
 		return;
-	} else {
-		const { name, type, description, deadline_vaccination } = req.body;
-		pet.name = name;
-		pet.type = type;
-		pet.description = description;
-		pet.deadline_vaccination = deadline_vaccination;
 	}
+	const { name, type, description, deadline_vaccination } = req.body;
+
+	await prisma.pet.update({
+		where: { id: id },
+		data: {
+			name,
+			type,
+			description,
+			deadline_vaccination: new Date(deadline_vaccination).toISOString(),
+		},
+	});
+
 	res.status(200).json({
 		success: "Alteração feita com sucesso",
 	});
 };
 
-export const patchPetVaccinated: RequestHandler<petParamsId> = (req, res) => {
+export const patchPetVaccinated: RequestHandler<petParamsId> = async (req, res) => {
 	const { id } = req.params;
-
-	const petshop = petshops.find((petShop) => petShop.cnpj == req.petshop?.cnpj);
-
-	const pet = petshop?.pets.find((petCurrent) => petCurrent.id == id);
+	const pet = await prisma.pet.findUnique({ where: { id } });
 
 	if (!pet) {
 		res.status(404).json({
 			error: "Pet não encontrado",
 		});
 		return;
-	} 
+	}
 
-	pet.vaccinated = true;
+	await prisma.pet.update({
+		where: { id: id },
+		data: {
+			vaccinated: true,
+		},
+	})
 	res.status(200).json({
 		success: "Alteração feita com sucesso",
 	});
 };
 
-export const deletePet: RequestHandler<petParamsId> = (req, res) => {
+export const deletePet: RequestHandler<petParamsId> = async (req, res) => {
 	const { id } = req.params;
-
-	const petshop = petshops.find((petShop) => petShop.cnpj == req.petshop?.cnpj);
-
-	const pet = petshop?.pets.find((petCurrent) => petCurrent.id == id);
+	const pet = await prisma.pet.findUnique({ where: { id } });
 
 	if (!pet) {
 		res.status(404).json({
@@ -94,15 +100,7 @@ export const deletePet: RequestHandler<petParamsId> = (req, res) => {
 		});
 		return;
 	}
-	const petIndex = petshop?.pets.findIndex((petCurrent) => petCurrent.id == id);
-	if (petIndex === undefined || petIndex === -1) {
-		res.status(400).json({
-			error: "Não foi possivel remover o pet",
-		});
-		return;
-	}
-
-	petshop?.pets.splice(petIndex as number, 1);
+	await prisma.pet.delete({ where: { id } });
 	res.status(200).json({
 		success: "Remoção feita com sucesso",
 	});

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { petshops } from "../database";
 import { checkExistsUserAccountHeaderType } from "../types/petshop.types";
+import { prisma } from "../database/prisma";
 
-export function checkExistsUserAccount(req: Request<{},{},{},{},checkExistsUserAccountHeaderType>, res: Response, next: NextFunction) {
+export async function checkExistsUserAccount(req: Request<{},{},{},{},checkExistsUserAccountHeaderType>, res: Response, next: NextFunction) {
 	const cnpj = req.headers.cnpj;	
 
 	if (Array.isArray(cnpj) || !cnpj) {
@@ -11,16 +11,14 @@ export function checkExistsUserAccount(req: Request<{},{},{},{},checkExistsUserA
 		});
 		return;
 	}
-	const petshop = petshops.find((petshopCurrent) => petshopCurrent.cnpj === cnpj);
+	const petshop = await prisma.petshop.findUnique({where: {cnpj: cnpj}});
 	
-	if (!petshop) {
+	if (!petshop || petshop == null) {
 		res.status(404).json({
 			error: "Petshop não encontrado",
 		});
 		return ;
 	}
-
 	req.petshop = petshop;
-
 	next();
 }

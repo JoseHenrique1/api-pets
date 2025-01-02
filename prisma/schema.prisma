@@ -26,6 +26,6 @@ model Pet {
 model Petshop {
   id   String @id @default(uuid())
   name String
-  cnpj String
+  cnpj String @unique
   pets Pet[]
 }

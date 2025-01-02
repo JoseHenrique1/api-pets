@@ -1,27 +1,24 @@
-import { petshops } from "../database";
 import { Request, Response } from "express";
 import { createPetshop } from "../types/petshop.types";
-import { v4 as uuid } from "uuid";
 import { isValidCNPJ } from "../utils/isvalid-cnpj";
+import { prisma } from "../database/prisma";
 
-export function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Response) {
+export async function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Response) {
 	const { name, cnpj } = req.body;
 
 	const petshop = {
-		id: uuid(),
 		name,
 		cnpj,
-		pets: [],
 	};
 
 	if (!isValidCNPJ(cnpj)) {
 		res.status(400).json({
 			error: "CNPJ Inválido",
-		})
+		});
 		return;
 	}
 
-	const petshopExists = petshops.find((petshop) => petshop.cnpj === cnpj);
+	const petshopExists = await prisma.petshop.findUnique({ where: { cnpj: cnpj } });
 	if (petshopExists) {
 		res.status(400).json({
 			error: "Petshop já existe!",
@@ -29,8 +26,8 @@ export function createPetshop(req: Request<{}, {}, createPetshop, {}>, res: Resp
 		return;
 	}
 
-	petshops.push(petshop);
+	const petshopCreated = await prisma.petshop.create({ data: petshop });
 	res.status(201).json({
-		petshop,
+		petshopCreated,
 	});
 }

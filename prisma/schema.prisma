@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Pet {
-  id    Int     @id @default(autoincrement())
+  id    String     @id @default(uuid())
   name  String
   type String
   description String
@@ -19,8 +19,8 @@ model Pet {
   deadline_vaccination String
 	created_at DateTime  @default(now())
 
-  owner Petshop @relation(fields: [ownerId], references: [id])
-  ownerId String
+  owner Petshop @relation(fields: [ownerCnpj], references: [cnpj])
+  ownerCnpj String
 }
 
 model Petshop {
